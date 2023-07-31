@@ -1,0 +1,30 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CombinedData {
+  Dashboard_id: String!
+  description: String!
+  email: String!
+  price: String!
+  secretKey: String!
+  sender: String!
+  title: String!
+}
+
+type ItemBuyed {
+  Dashboard_id: String!
+  buyerEmail: String!
+  description: String!
+  email: String!
+  price: String!
+  title: String!
+}
+
+type Mutation {
+  getCombinedDataById(buyerEmail: String!, id: String!, userName: String!): [ItemBuyed!]!
+}
+
+type Query {
+  getCombinedData: [CombinedData!]!
+}

@@ -1,0 +1,35 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/Dashboard.sol": {
+      "content": "// SPDX-License-Identifier: UNLICENSED\npragma solidity ^0.8.9;\n\nerror Dashboard__NotEnoughETHToAddPost();\nerror Dashboard__NotEnoughETHToBuyItemFromThePost();\n\ncontract Dashboard {\n  address private immutable i_owner;\n  uint256 private immutable i_minEntranceFee;\n  uint256 public totalPosts;\n  uint256[] public postIds;\n\n  constructor(uint256 minEntranceFee) payable {\n    i_owner = payable(msg.sender);\n    i_minEntranceFee = minEntranceFee;\n  }\n\n  event ItemAdded(\n    address indexed sender,\n    string description,\n    string title,\n    uint256 price,\n    uint256 id\n  );\n\n  event ItemBuyed(address indexed buyer, uint256 id, uint256 price);\n\n  struct Post {\n    address sender;\n    string description;\n    string title;\n    uint256 price;\n    uint256 id;\n    bool buyed;\n  }\n\n  mapping(uint256 => Post) posts;\n\n  function addPost(\n    string memory _description,\n    string memory _title,\n    uint256 _price\n  ) public payable {\n    if (msg.value < i_minEntranceFee) {\n      revert Dashboard__NotEnoughETHToAddPost();\n    }\n\n    Post storage newPost = posts[totalPosts];\n\n    newPost.description = _description;\n    newPost.title = _title;\n    newPost.price = _price;\n    newPost.sender = msg.sender;\n    newPost.id = totalPosts;\n    newPost.buyed = false;\n\n    postIds.push(totalPosts);\n    emit ItemAdded(msg.sender, _description, _title, _price, totalPosts);\n\n    totalPosts += 1;\n  }\n\n  function BuyItemFromThePost(uint256 postId) public payable {\n    if (msg.value < posts[postId].price) {\n      revert Dashboard__NotEnoughETHToBuyItemFromThePost();\n    }\n\n    payable(posts[postId].sender).transfer(msg.value);\n\n    emit ItemBuyed(msg.sender, postId, msg.value);\n    posts[postId].buyed = true;\n  }\n\n  function getMinEntranceFee() external view returns (uint256) {\n    return i_minEntranceFee;\n  }\n\n  function getTotalPosts() external view returns (uint256) {\n    return totalPosts;\n  }\n\n  function getPostIds() external view returns (uint256[] memory) {\n    return postIds;\n  }\n\n  function getPost(uint256 id) external view returns (Post memory) {\n    return posts[id];\n  }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
